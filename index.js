@@ -10,11 +10,27 @@ async function pegaArquivo(caminhoDoArquivo) {
     const encoding = 'utf-8';
   
     const texto = await fs.promises.readFile(caminhoDoArquivo, encoding);
-    console.log(chalk.green(texto));
+    console.log(extraiLinks(texto));
   }
   catch (erro) {
     trataErro(erro);
   }
+}
+
+/* 
+  REGEX PARA BUSCAR LINKS EM .md
+  parte1 - \[[^[\]]*?\] para pegar `[textoDoLink]`
+  parte2 - \(https?:\/\/[^\s?#.].[^\s]*\) para pegar `(urlDoLink)`
+
+  juntando as duas e separando por grupos
+  \[([^[\]]*?)\]\((https?:\/\/[^\s?#.].[^\s]*)\)
+*/
+function extraiLinks(texto) {
+  const regex = /\[([^[\]]*?)\]\((https?:\/\/[^\s?#.].[^\s]*)\)/gm;
+  const capturas = [...texto.matchAll(regex)];
+  const resultados = capturas.map((e) => ({[e[1]]: e[2]}))
+
+  return resultados;
 }
 
 /* 
@@ -42,4 +58,4 @@ function pegaArquivo(caminhoDoArquivo) {
 } 
 */
 
-pegaArquivo('./arquivos/tedxto.md');
+pegaArquivo('./arquivos/texto.md');
